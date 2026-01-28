@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Quote App</title>
+  <link rel="stylesheet" href="style.css"> </head>
+<body>
+  <h1>Quote of the Day</h1>
+  <hr>
+    <button onclick="showAll()">Show All Quotes</button>
+    <ul id="all-quotes-list"></ul>
+    <hr>
+    <h3>Add Your Own Quote:</h3>
+    <input type="text" id="quote-input" placeholder="Type something inspiring...">
+<button onclick="sendQuote()">Add Quote</button>
+
+  <div id="quote-display">Click the button to get a quote!</div>
+  <button onclick="getQuote()">Get New Quote</button>
+
+  <script>
+    async function getQuote() {
+      // This 'fetches' data from your backend
+      const response = await fetch('http://localhost:3000/api/quote');
+      const data = await response.json();
+      
+      // This updates the screen
+      document.getElementById('quote-display').innerText = data.quote;
+    }
+    async function sendQuote() {
+    const input = document.getElementById('quote-input');
+    const quoteText = input.value;
+
+    const response = await fetch('http://localhost:3000/api/quote', {
+      method: 'POST', // We specify this is a POST request
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ text: quoteText }) // We turn the JS object into a string
+    });
+
+    const result = await response.json();
+    alert(result.message); // Tell the user it worked!
+    input.value = ''; // Clear the input box
+  }
+
+  async function showAll() {
+  const response = await fetch('http://localhost:3000/api/all-quotes');
+  const allQuotes = await response.json();
+  
+  const list = document.getElementById('all-quotes-list');
+  list.innerHTML = ''; // Clear the list first
+  
+  allQuotes.forEach(q => {
+    const li = document.createElement('li');
+    li.innerText = q;
+    list.appendChild(li);
+  });
+}
+  </script>
+</body>
+</html>
